@@ -6,7 +6,7 @@
 
     <groupId>com.smallaswater.anvilplus</groupId>
     <artifactId>AnvilPlus</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
     <dependencies>
         <dependency>
             <groupId>cn.nukkit</groupId>

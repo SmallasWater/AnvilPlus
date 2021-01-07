@@ -71,13 +71,5 @@ public abstract class BaseCraftItem implements Cloneable{
         return this.getClass().getSimpleName();
     }
 
-    @Override
-    protected BaseCraftItem clone() {
-        try {
-            return (BaseCraftItem) super.clone();
-        } catch (CloneNotSupportedException ignore) {
 
-        }
-        return null;
-    }
 }

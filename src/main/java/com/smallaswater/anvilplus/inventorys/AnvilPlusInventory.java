@@ -98,7 +98,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         if(local == null || second == null){
             return null;
         }
-        Item result = local.clone();
+
         BaseCraftItem craft = CraftItemManager.getCraftItem(local, second);
         if(craft != null){
             UseCraftItemEvent event = new UseCraftItemEvent(player,craft);
@@ -113,21 +113,8 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         }else{
             craft = new CraftItem(local,second,null);
         }
-        if(local instanceof ItemDurable){
-            if(result.equals(second,false,false)){
-                craft.onEcho(result,second.clone());
-                if(result.getDamage() > 0){
-                    int damage = result.getDamage() - (second.getMaxDurability() - second.getDamage());
-                    if(damage < 0){
-                        damage = 0;
-                    }
-                    result.setDamage(damage);
-                    craft.setLocal(result);
-                    craft.setEcho(result);
-                }
-            }
-        }
-        return defaultEnchant(craft,new CraftItem(local,second,null));
+
+        return defaultEnchant(craft);
 
 
     }
@@ -145,6 +132,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                     setItem(TOOL_ITEM_SLOT,echoI.getLocal());
                     setItem(ITEM_SLOT,echoI.getSecond());
                     setItem(ECHO_ITEM,echo);
+                    player.getLevel().addLevelSoundEvent(player, 175);
                 }
             }
         }
@@ -154,11 +142,25 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
     }
 
 
-    private BaseCraftItem defaultEnchant(BaseCraftItem re,CraftItem de){
+    private BaseCraftItem defaultEnchant(BaseCraftItem re){
         Item result = re.getLocal().clone();
         int countEnchant = 0;
+
         if (re.getLocal().getId() != 0 && re.getSecond().getId() != 0) {
             if (re.getLocal().getId() != 0 && re.getSecond().getId() != 0) {
+                boolean isFix = false;
+                if(result instanceof ItemDurable){
+                    if(result.equals(re.getSecond(),false,false)){
+                        if(result.getDamage() > 0){
+                            int damage = result.getDamage() - (re.getSecond().getMaxDurability() - re.getSecond().getDamage());
+                            if(damage < 0){
+                                damage = 0;
+                            }
+                            result.setDamage(damage);
+                            isFix = true;
+                        }
+                    }
+                }
                 ArrayList<Enchantment> enchantments = new ArrayList<>(Arrays.asList(re.getSecond().getEnchantments()));
                 Enchantment enchantment = null;
                 for(Enchantment enchantment1: enchantments){
@@ -198,8 +200,8 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                     }
 
                 }
-                if(countEnchant > 0){
-                    re.onEcho(de.getLocal(),de.getSecond());
+                if(countEnchant > 0 || isFix){
+                    re.onEcho(re.getLocal(),re.getSecond());
                     re.setEcho(result);
                 }
 

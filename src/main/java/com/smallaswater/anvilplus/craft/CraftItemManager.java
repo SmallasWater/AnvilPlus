@@ -73,10 +73,10 @@ public class CraftItemManager {
         FixItemCraft fixItem = new FixItemCraft(local,second,0);
         for(BaseCraftItem baseCraftItem: craftItems){
             if(baseCraftItem.equals(craftItem) ){
-                return baseCraftItem.clone();
+                return ((CraftItem)baseCraftItem).clone();
             }
             if(baseCraftItem.equals(fixItem)){
-                return baseCraftItem.clone();
+                return ((FixItemCraft)baseCraftItem).clone();
             }
         }
         return null;

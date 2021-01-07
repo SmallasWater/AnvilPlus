@@ -17,8 +17,8 @@ public class FixItemCraft extends BaseCraftItem{
     }
 
 
-    private Item getEchoItem() {
-        Item i = getLocal().clone();
+    private Item getEchoItem(Item local) {
+        Item i = local.clone();
         int damage = i.getDamage() - fixCount;
         if(damage < 0){
             damage = 0;
@@ -32,7 +32,7 @@ public class FixItemCraft extends BaseCraftItem{
 
     @Override
     public void onEcho(Item local, Item second) {
-        this.echo = getEchoItem();
+        this.echo = getEchoItem(local);
         super.onEcho(local, second);
 
 
@@ -44,5 +44,12 @@ public class FixItemCraft extends BaseCraftItem{
             return ((FixItemCraft) obj).getLocal().getId() == getLocal().getId() && ((FixItemCraft) obj).getSecond().getId() == getSecond().getId();
         }
         return false;
+    }
+
+    @Override
+    public FixItemCraft clone() {
+        Item local = this.local.clone();
+        Item second = this.second.clone();
+        return new FixItemCraft(local,second,fixCount);
     }
 }
