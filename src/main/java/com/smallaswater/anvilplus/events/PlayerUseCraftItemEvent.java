@@ -12,7 +12,7 @@ import com.smallaswater.anvilplus.craft.CraftItem;
  * Create on 2021/1/7 18:40
  * Package com.smallaswater.anvilplus.events
  */
-public class UseCraftItemEvent extends PlayerEvent implements Cancellable {
+public class PlayerUseCraftItemEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
@@ -22,7 +22,7 @@ public class UseCraftItemEvent extends PlayerEvent implements Cancellable {
 
 
     private BaseCraftItem craftItem;
-    public UseCraftItemEvent(Player player, BaseCraftItem craftItem){
+    public PlayerUseCraftItemEvent(Player player, BaseCraftItem craftItem){
         this.player = player;
         this.craftItem = craftItem;
     }

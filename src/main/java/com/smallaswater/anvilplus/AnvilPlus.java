@@ -1,21 +1,28 @@
 package com.smallaswater.anvilplus;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAnvil;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
+import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
+import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.item.Item;
+import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
+import com.smallaswater.anvilplus.events.PlayerUseAnvilEvent;
 import com.smallaswater.anvilplus.inventorys.AnvilPlusInventory;
 import com.smallaswater.anvilplus.utils.Tools;
+
+import java.util.LinkedHashMap;
 
 
 /**
@@ -25,7 +32,9 @@ import com.smallaswater.anvilplus.utils.Tools;
  */
 public class AnvilPlus extends PluginBase implements Listener {
 
+    public static LinkedHashMap<Player,Block> saveAnvilBlock = new LinkedHashMap<>();
 
+    public static LinkedHashMap<Player,AnvilPlusInventory> inventory = new LinkedHashMap<>();
     @Override
     public void onEnable() {
         this.getLogger().info(format("&b[铁砧] 插件加载成功"));
@@ -44,15 +53,55 @@ public class AnvilPlus extends PluginBase implements Listener {
         if(block instanceof BlockAnvil){
             if(event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
                 Tools.getAnvilInventory(event.getPlayer());
+                saveAnvilBlock.put(event.getPlayer(),block);
                 event.setCancelled();
             }
         }
+    }
+
+    @EventHandler
+    public void onPlayerUseAnvil(PlayerUseAnvilEvent event){
+        Block block = event.getBlock();
+        if(block instanceof BlockAnvil){
+            if(block.getDamage() < 12) {
+                block.setDamage(block.getDamage() + 1);
+                event.getBlock().level.setBlock(block,block,true,true);
+            }else{
+                removeInventory(event.getBlock());
+                event.getBlock().level.setBlock(block,Block.get(0),true,true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event){
+        AnvilPlus.inventory.remove(event.getPlayer());
+        AnvilPlus.saveAnvilBlock.remove(event.getPlayer());
     }
 
     public static String format(String msg){
         return TextFormat.colorize('&',msg);
     }
 
+    private void removeInventory(Block block){
+        Block b;
+        for(Player player: saveAnvilBlock.keySet()){
+            b = saveAnvilBlock.get(player);
+            if(b.equals(block)){
+                if(inventory.containsKey(player)){
+                    player.removeWindow(inventory.get(player));
+                }
+            }
+        }
+    }
+    @EventHandler
+    public void onBreak(BlockBreakEvent  event){
+        if(event.isCancelled()){
+            return;
+        }
+        removeInventory(event.getBlock());
+
+    }
 
 
     @EventHandler

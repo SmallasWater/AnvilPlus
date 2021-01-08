@@ -6,19 +6,20 @@ package com.smallaswater.anvilplus.inventorys;
 import cn.nukkit.Player;
 
 import cn.nukkit.Server;
-import cn.nukkit.blockentity.BlockEntityHopper;
+import cn.nukkit.block.Block;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
+import com.smallaswater.anvilplus.AnvilPlus;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 import com.smallaswater.anvilplus.craft.CraftItem;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
-import com.smallaswater.anvilplus.events.UseCraftItemEvent;
+import com.smallaswater.anvilplus.events.PlayerUseAnvilEvent;
+import com.smallaswater.anvilplus.events.PlayerUseCraftItemEvent;
 import com.smallaswater.anvilplus.utils.OccupyItem;
 
 import java.util.ArrayList;
@@ -78,22 +79,24 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         RemoveEntityPacket pk = new RemoveEntityPacket();
         pk.eid = id;
         player.dataPacket(pk);
+        AnvilPlus.inventory.remove(player);
+        AnvilPlus.saveAnvilBlock.remove(player);
     }
 
 
     private void toClose(Player player){
         Item local = getItem(TOOL_ITEM_SLOT);
         Item second = getItem(ITEM_SLOT);
-        Item echo = getItem(ECHO_ITEM);
+//        Item echo = getItem(ECHO_ITEM);
         if(local != null && local.getId() != 0){
             player.level.dropItem(player,local);
         }
         if(second != null && second.getId() != 0){
             player.level.dropItem(player,second);
         }
-        if(echo != null && echo.getId() != 0 && !(echo instanceof OccupyItem)){
-            player.level.dropItem(player,echo);
-        }
+//        if(echo != null && echo.getId() != 0 && !(echo instanceof OccupyItem)){
+//            player.level.dropItem(player,echo);
+//        }
 
     }
     private BaseCraftItem onEchoItem(Player player, Item local, Item second){
@@ -103,7 +106,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
         BaseCraftItem craft = CraftItemManager.getCraftItem(local, second);
         if(craft != null){
-            UseCraftItemEvent event = new UseCraftItemEvent(player,craft);
+            PlayerUseCraftItemEvent event = new PlayerUseCraftItemEvent(player,craft);
             Server.getInstance().getPluginManager().callEvent(event);
             if(event.isCancelled()){
                 return null;
@@ -134,9 +137,15 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                 if(echo != null && echo.getId() != 0) {
                     //玩家取出物品时消耗
                     if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
+                        PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player,echoI, AnvilPlus.saveAnvilBlock.getOrDefault(player, Block.get(0)));
+                        Server.getInstance().getPluginManager().callEvent(event);
+                        if(event.isCancelled()){
+                            return;
+                        }
                         this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
                         this.setItem(ITEM_SLOT, echoI.getSecond());
                         this.setItem(ECHO_ITEM, new OccupyItem());
+
                         player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
                     } else {
                         //防止重复触发onSlotChange
