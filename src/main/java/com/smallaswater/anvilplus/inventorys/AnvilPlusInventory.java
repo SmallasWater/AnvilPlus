@@ -45,6 +45,8 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
     public long id;
 
+    public boolean close = false;
+
     AnvilPlusInventory(Player player, BaseHolder holder) {
         super(holder, InventoryType.HOPPER);
         this.player = player;
@@ -74,6 +76,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
     @Override
     public void onClose(Player player)
     {
+        close = true;
         toClose(player);
         super.onClose(player);
         RemoveEntityPacket pk = new RemoveEntityPacket();
@@ -85,6 +88,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
 
     private void toClose(Player player){
+
         Item local = getItem(TOOL_ITEM_SLOT);
         Item second = getItem(ITEM_SLOT);
 //        Item echo = getItem(ECHO_ITEM);
@@ -137,16 +141,14 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                 if(echo != null && echo.getId() != 0) {
                     //玩家取出物品时消耗
                     if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
-                        PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player,echoI, AnvilPlus.saveAnvilBlock.getOrDefault(player, Block.get(0)));
-                        Server.getInstance().getPluginManager().callEvent(event);
-                        if(event.isCancelled()){
-                            return;
-                        }
                         this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
                         this.setItem(ITEM_SLOT, echoI.getSecond());
                         this.setItem(ECHO_ITEM, new OccupyItem());
-
                         player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
+                        if(AnvilPlus.saveAnvilBlock.containsKey(player)) {
+                            PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player));
+                            Server.getInstance().getPluginManager().callEvent(event);
+                        }
                     } else {
                         //防止重复触发onSlotChange
                         this.slots.put(ECHO_ITEM, echo);

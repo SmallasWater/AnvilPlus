@@ -12,7 +12,7 @@ import com.smallaswater.anvilplus.craft.BaseCraftItem;
  * Create on 2021/1/8 11:55
  * Package com.smallaswater.anvilplus.events
  */
-public class PlayerUseAnvilEvent extends PlayerEvent implements Cancellable {
+public class PlayerUseAnvilEvent extends PlayerEvent {
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
     public static HandlerList getHandlers() {

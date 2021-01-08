@@ -22,6 +22,9 @@ public class FixItemCraft extends BaseCraftItem{
         if(i.getDamage() > 0) {
             int damage;
             int count = (int) Math.ceil(i.getDamage() / fixCount);
+            if(count < 1){
+                count = 1;
+            }
             if(second.getCount() >= count){
                 damage = 0;
                 this.second.setCount(count);
