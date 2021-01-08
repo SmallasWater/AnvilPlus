@@ -18,6 +18,7 @@ import com.smallaswater.anvilplus.AnvilPlus;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 import com.smallaswater.anvilplus.craft.CraftItem;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
+import com.smallaswater.anvilplus.events.PlayerReduceExpEvent;
 import com.smallaswater.anvilplus.events.PlayerUseAnvilEvent;
 import com.smallaswater.anvilplus.events.PlayerUseCraftItemEvent;
 import com.smallaswater.anvilplus.utils.OccupyItem;
@@ -47,11 +48,16 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
     public boolean close = false;
 
+    public int useExp = 10;
+
+    public String title;
+
     AnvilPlusInventory(Player player, BaseHolder holder) {
         super(holder, InventoryType.HOPPER);
         this.player = player;
 
     }
+
 
     private Map<Integer,Item> getOccupyItems(){
         LinkedHashMap<Integer,Item> items = new LinkedHashMap<>();
@@ -140,15 +146,25 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                 Item echo = echoI.getEcho();
                 if(echo != null && echo.getId() != 0) {
                     //玩家取出物品时消耗
+
                     if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
-                        this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
-                        this.setItem(ITEM_SLOT, echoI.getSecond());
-                        this.setItem(ECHO_ITEM, new OccupyItem());
-                        player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
-                        if(AnvilPlus.saveAnvilBlock.containsKey(player)) {
-                            PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player));
-                            Server.getInstance().getPluginManager().callEvent(event);
+                        PlayerReduceExpEvent expEvent = new PlayerReduceExpEvent(player,useExp,echoI);
+                        Server.getInstance().getPluginManager().callEvent(expEvent);
+                        useExp = expEvent.getExp();
+                        if(player.getExperience() > useExp){
+                            player.setExperience(player.getExperience() - useExp);
+                            this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
+                            this.setItem(ITEM_SLOT, echoI.getSecond());
+                            this.setItem(ECHO_ITEM, new OccupyItem());
+
+                            player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
+                            if(AnvilPlus.saveAnvilBlock.containsKey(player)) {
+                                PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player));
+                                Server.getInstance().getPluginManager().callEvent(event);
+                            }
                         }
+
+
                     } else {
                         //防止重复触发onSlotChange
                         this.slots.put(ECHO_ITEM, echo);
@@ -166,6 +182,14 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
     }
 
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     private BaseCraftItem defaultEnchant(BaseCraftItem re){
         Item result = re.getLocal().clone();

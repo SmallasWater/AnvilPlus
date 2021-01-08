@@ -1,36 +1,39 @@
 package com.smallaswater.anvilplus.events;
 
 import cn.nukkit.Player;
-import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerEvent;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 
 /**
  * @author SmallasWater
- * Create on 2021/1/7 18:40
+ * Create on 2021/1/8 14:58
  * Package com.smallaswater.anvilplus.events
  */
-public class PlayerUseCraftItemEvent extends PlayerEvent implements Cancellable{
-
+public class PlayerReduceExpEvent extends PlayerEvent {
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
     public static HandlerList getHandlers() {
         return HANDLER_LIST;
     }
-
-
     private BaseCraftItem craftItem;
-    public PlayerUseCraftItemEvent(Player player, BaseCraftItem craftItem){
-        this.player = player;
+    private int exp;
+
+    public PlayerReduceExpEvent(Player player, int exp, BaseCraftItem  craftItem){
         this.craftItem = craftItem;
+        this.player = player;
+        this.exp = exp;
     }
 
     public BaseCraftItem getCraftItem() {
         return craftItem;
     }
 
-    public void setCraftItem(BaseCraftItem craftItem) {
-        this.craftItem = craftItem;
+    public int getExp() {
+        return exp;
+    }
+
+    public void setExp(int exp) {
+        this.exp = exp;
     }
 }

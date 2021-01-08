@@ -1,19 +1,12 @@
 package com.smallaswater.anvilplus.utils;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockHopper;
-import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryType;
-import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import com.smallaswater.anvilplus.AnvilPlus;
 import com.smallaswater.anvilplus.inventorys.AnvilPlusInventory;
 import com.smallaswater.anvilplus.inventorys.BaseHolder;
-
-import java.util.LinkedHashMap;
 
 /**
  * @author SmallasWater
@@ -35,6 +28,7 @@ public class Tools {
         player.dataPacket(fakeEntity);
         BaseHolder inventory = new BaseHolder(player);
         ((AnvilPlusInventory)inventory.getInventory()).id = id;
+        ((AnvilPlusInventory)inventory.getInventory()).title = "§l§e铁砧";
         AnvilPlus.inventory.put(player, (AnvilPlusInventory) inventory.getInventory());
 //
         player.addWindow(inventory.getInventory());
