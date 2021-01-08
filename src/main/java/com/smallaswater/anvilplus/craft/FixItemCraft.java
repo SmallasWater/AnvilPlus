@@ -21,7 +21,7 @@ public class FixItemCraft extends BaseCraftItem{
         Item i = local.clone();
         if(i.getDamage() > 0) {
             int damage;
-            int count = (int) Math.ceil(i.getDamage() / fixCount);
+            int count = (int) Math.ceil(((float)i.getDamage()) / ((float) fixCount));
             if(count < 1){
                 count = 1;
             }
