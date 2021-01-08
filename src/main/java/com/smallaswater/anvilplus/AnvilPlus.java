@@ -53,21 +53,24 @@ public class AnvilPlus extends PluginBase implements Listener {
         return TextFormat.colorize('&',msg);
     }
 
+
+
     @EventHandler
     public void onItemChange(InventoryTransactionEvent event){
         InventoryTransaction transaction = event.getTransaction();
         for(InventoryAction action:transaction.getActions()){
             Item item =  action.getSourceItem();
-            if(item.getNamedTag() != null){
-                if(item.getNamedTag().contains("tag_name") && "OccupyItem".equalsIgnoreCase(item.getNamedTag().getString("tag_name"))){
-                    for(Inventory inventory:transaction.getInventories()){
-                        if(inventory instanceof AnvilPlusInventory){
+            for(Inventory inventory:transaction.getInventories()){
+                if(inventory instanceof AnvilPlusInventory){
+                    if(item.getNamedTag() != null){
+                        if(item.getNamedTag().contains("tag_name") && "OccupyItem".equalsIgnoreCase(item.getNamedTag().getString("tag_name"))){
                             event.setCancelled();
                             return;
                         }
                     }
                 }
             }
+
         }
     }
 

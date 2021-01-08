@@ -13,6 +13,7 @@ import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 import com.smallaswater.anvilplus.craft.CraftItem;
@@ -53,6 +54,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         LinkedHashMap<Integer,Item> items = new LinkedHashMap<>();
         items.put(1,new OccupyItem());
         items.put(3,new OccupyItem());
+        items.put(4,new OccupyItem());
         return items;
     }
 
@@ -89,7 +91,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         if(second != null && second.getId() != 0){
             player.level.dropItem(player,second);
         }
-        if(echo != null && echo.getId() != 0){
+        if(echo != null && echo.getId() != 0 && !(echo instanceof OccupyItem)){
             player.level.dropItem(player,echo);
         }
 
@@ -124,19 +126,31 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         super.onSlotChange(index, before, send);
         Item local = this.getItem(TOOL_ITEM_SLOT);
         Item second = this.getItem(ITEM_SLOT);
+        Item echos = this.getItem(ECHO_ITEM);
         if(local.getId() != 0 && second.getId() != 0){
             BaseCraftItem echoI = onEchoItem(player,local,second);
             if(echoI != null){
                 Item echo = echoI.getEcho();
-                if(echo != null && echo.getId() != 0){
-                    setItem(TOOL_ITEM_SLOT,echoI.getLocal());
-                    setItem(ITEM_SLOT,echoI.getSecond());
-                    setItem(ECHO_ITEM,echo);
-                    player.getLevel().addLevelSoundEvent(player, 175);
+                if(echo != null && echo.getId() != 0) {
+                    //玩家取出物品时消耗
+                    if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
+                        this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
+                        this.setItem(ITEM_SLOT, echoI.getSecond());
+                        this.setItem(ECHO_ITEM, new OccupyItem());
+                        player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
+                    } else {
+                        //防止重复触发onSlotChange
+                        this.slots.put(ECHO_ITEM, echo);
+                        this.sendSlot(ECHO_ITEM, this.getViewers());
+                    }
                 }
             }
+        }else{
+            if(!(echos instanceof OccupyItem)) {
+                this.setItem(ECHO_ITEM, new OccupyItem());
+            }
         }
-        sendContents(player);
+        this.sendContents(player);
 
 
     }
@@ -170,31 +184,32 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                     if(enchantment != null){
                         Enchantment localEnchantment = re.getLocal().getEnchantment(enchantment.getId());
                         if (localEnchantment != null) {
+                            int startLevel = localEnchantment.getLevel();
                             int level = Math.max(localEnchantment.getLevel(), enchantment.getLevel());
                             if (localEnchantment.getLevel() == enchantment.getLevel()) {
                                 ++level;
-                            }else{
+                            } else{
                                 if(localEnchantment.getLevel() > enchantment.getLevel()){
                                     if(countEnchant == 0) {
-                                        return null;
+                                        continue;
                                     }
                                 }
                             }
                             enchantment.setLevel(level);
-                            if(enchantment.getLevel() == level){
-                                return null;
+                            if(startLevel == enchantment.getLevel()){
+                                if(countEnchant == 0) {
+                                    continue;
+                                }
                             }
-                            result.addEnchantment(enchantment);
-                            countEnchant++;
+                            if(enchantment.canEnchant(result)) {
+                                result.addEnchantment(enchantment);
+                                countEnchant++;
+                            }
 
                         } else {
                             if(enchantment.canEnchant(result)){
                                 result.addEnchantment(enchantment);
                                 countEnchant++;
-                            }else{
-                                if(countEnchant == 0) {
-                                    return null;
-                                }
                             }
                         }
                     }

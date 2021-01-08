@@ -19,11 +19,15 @@ public class FixItemCraft extends BaseCraftItem{
 
     private Item getEchoItem(Item local) {
         Item i = local.clone();
-        int damage = i.getDamage() - fixCount;
-        if(damage < 0){
-            damage = 0;
+        if(i.getDamage() > 0) {
+            int damage = i.getDamage() - fixCount;
+            if (damage < 0) {
+                damage = 0;
+            }
+            i.setDamage(damage);
+        }else{
+            return Item.get(0);
         }
-        i.setDamage(damage);
 
 
 
