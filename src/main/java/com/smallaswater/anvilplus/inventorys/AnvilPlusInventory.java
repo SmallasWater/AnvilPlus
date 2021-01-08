@@ -123,6 +123,8 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         super.onSlotChange(index, before, send);
         Item local = this.getItem(TOOL_ITEM_SLOT);
         Item second = this.getItem(ITEM_SLOT);
+        //TODO 这会吞掉玩家主动放入的物品
+        this.setItem(ECHO_ITEM, Item.get(0));
         if(local.getId() != 0 && second.getId() != 0) {
             BaseCraftItem echoI = onEchoItem(player,local,second);
             if(echoI != null) {
