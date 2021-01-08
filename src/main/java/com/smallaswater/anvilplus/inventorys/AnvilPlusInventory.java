@@ -1,18 +1,17 @@
 package com.smallaswater.anvilplus.inventorys;
 
 
-
-
 import cn.nukkit.Player;
-
 import cn.nukkit.Server;
-import cn.nukkit.blockentity.BlockEntityHopper;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.ContainerInventory;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 import com.smallaswater.anvilplus.craft.CraftItem;
@@ -124,21 +123,25 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         super.onSlotChange(index, before, send);
         Item local = this.getItem(TOOL_ITEM_SLOT);
         Item second = this.getItem(ITEM_SLOT);
-        if(local.getId() != 0 && second.getId() != 0){
+        if(local.getId() != 0 && second.getId() != 0) {
             BaseCraftItem echoI = onEchoItem(player,local,second);
-            if(echoI != null){
+            if(echoI != null) {
                 Item echo = echoI.getEcho();
-                if(echo != null && echo.getId() != 0){
-                    setItem(TOOL_ITEM_SLOT,echoI.getLocal());
-                    setItem(ITEM_SLOT,echoI.getSecond());
-                    setItem(ECHO_ITEM,echo);
-                    player.getLevel().addLevelSoundEvent(player, 175);
+                if(echo != null && echo.getId() != 0) {
+                    if (index == ECHO_ITEM && before != null && before.getId() != 0) { //玩家取出物品时消耗
+                        this.setItem(TOOL_ITEM_SLOT,echoI.getLocal());
+                        this.setItem(ITEM_SLOT,echoI.getSecond());
+                        this.setItem(ECHO_ITEM, Item.get(0));
+                        player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
+                    }else {
+                        //防止重复触发onSlotChange
+                        this.slots.put(ECHO_ITEM, echo);
+                        this.sendSlot(ECHO_ITEM, this.getViewers());
+                    }
                 }
             }
         }
-        sendContents(player);
-
-
+        this.sendContents(player);
     }
 
 
