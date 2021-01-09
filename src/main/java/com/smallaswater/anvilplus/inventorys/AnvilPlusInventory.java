@@ -6,11 +6,11 @@ package com.smallaswater.anvilplus.inventorys;
 import cn.nukkit.Player;
 
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
@@ -18,7 +18,8 @@ import com.smallaswater.anvilplus.AnvilPlus;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 import com.smallaswater.anvilplus.craft.CraftItem;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
-import com.smallaswater.anvilplus.events.PlayerReduceExpEvent;
+import com.smallaswater.anvilplus.events.AnvilSetEchoItemEvent;
+import com.smallaswater.anvilplus.events.PlayerAnvilEchoItemEvent;
 import com.smallaswater.anvilplus.events.PlayerUseAnvilEvent;
 import com.smallaswater.anvilplus.events.PlayerUseCraftItemEvent;
 import com.smallaswater.anvilplus.utils.OccupyItem;
@@ -46,17 +47,16 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
     public long id;
 
-    public boolean close = false;
-
-    public int useExp = 10;
 
     public String title;
+
 
     AnvilPlusInventory(Player player, BaseHolder holder) {
         super(holder, InventoryType.HOPPER);
         this.player = player;
 
     }
+
 
 
     private Map<Integer,Item> getOccupyItems(){
@@ -82,7 +82,6 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
     @Override
     public void onClose(Player player)
     {
-        close = true;
         toClose(player);
         super.onClose(player);
         RemoveEntityPacket pk = new RemoveEntityPacket();
@@ -109,6 +108,20 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 //        }
 
     }
+
+    private BaseCraftItem getEchoItem(Player player, Item local, Item second){
+        BaseCraftItem craftItem = onEchoItem(player, local, second);
+        if(craftItem != null){
+            PlayerAnvilEchoItemEvent event = new PlayerAnvilEchoItemEvent(player,craftItem,this);
+            Server.getInstance().getPluginManager().callEvent(event);
+            if(event.isCancelled()){
+                return null;
+            }
+            craftItem = event.getCraftItem();
+        }
+        return craftItem;
+    }
+
     private BaseCraftItem onEchoItem(Player player, Item local, Item second){
         if(local == null || second == null){
             return null;
@@ -141,31 +154,32 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         Item second = this.getItem(ITEM_SLOT);
         Item echos = this.getItem(ECHO_ITEM);
         if(local.getId() != 0 && second.getId() != 0){
-            BaseCraftItem echoI = onEchoItem(player,local,second);
+            BaseCraftItem echoI = getEchoItem(player,local,second);
             if(echoI != null){
                 Item echo = echoI.getEcho();
                 if(echo != null && echo.getId() != 0) {
                     //玩家取出物品时消耗
-
                     if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
-                        PlayerReduceExpEvent expEvent = new PlayerReduceExpEvent(player,useExp,echoI);
-                        Server.getInstance().getPluginManager().callEvent(expEvent);
-                        useExp = expEvent.getExp();
-                        if(player.getExperience() > useExp){
-                            player.setExperience(player.getExperience() - useExp);
-                            this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
-                            this.setItem(ITEM_SLOT, echoI.getSecond());
-                            this.setItem(ECHO_ITEM, new OccupyItem());
+                        this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
+                        this.setItem(ITEM_SLOT, echoI.getSecond());
+                        this.setItem(ECHO_ITEM, new OccupyItem());
 
-                            player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
-                            if(AnvilPlus.saveAnvilBlock.containsKey(player)) {
-                                PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player));
-                                Server.getInstance().getPluginManager().callEvent(event);
-                            }
+                        player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
+                        if(AnvilPlus.saveAnvilBlock.containsKey(player)) {
+                            PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player));
+                            Server.getInstance().getPluginManager().callEvent(event);
                         }
-
-
                     } else {
+                        AnvilSetEchoItemEvent event = new AnvilSetEchoItemEvent(player,echoI);
+                        Server.getInstance().getPluginManager().callEvent(event);
+                        if(event.isCancelledItem()){
+                            CompoundTag tag = echo.getNamedTag();
+                            if(tag == null){
+                                tag = new CompoundTag();
+                            }
+                            tag.putString("tag_name","OccupyItem");
+                            echo.setCompoundTag(tag);
+                        }
                         //防止重复触发onSlotChange
                         this.slots.put(ECHO_ITEM, echo);
                         this.sendSlot(ECHO_ITEM, this.getViewers());
@@ -175,6 +189,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         }else{
             if(!(echos instanceof OccupyItem)) {
                 this.setItem(ECHO_ITEM, new OccupyItem());
+
             }
         }
         this.sendContents(player);
@@ -187,9 +202,6 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     private BaseCraftItem defaultEnchant(BaseCraftItem re){
         Item result = re.getLocal().clone();

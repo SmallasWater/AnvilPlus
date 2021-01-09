@@ -1,39 +1,40 @@
 package com.smallaswater.anvilplus.events;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
+import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerEvent;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
+import com.smallaswater.anvilplus.inventorys.AnvilPlusInventory;
 
 /**
+ * 当铁砧可以输出物品的时候，触发这个事件
  * @author SmallasWater
- * Create on 2021/1/8 11:55
+ * Create on 2021/1/9 16:43
  * Package com.smallaswater.anvilplus.events
  */
-public class PlayerUseAnvilEvent extends PlayerEvent {
+public class PlayerAnvilEchoItemEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
     public static HandlerList getHandlers() {
         return HANDLER_LIST;
     }
 
-
     private BaseCraftItem craftItem;
-    private Block block;
-    public PlayerUseAnvilEvent(Player player, BaseCraftItem craftItem, Block block){
-        this.player = player;
+
+    private AnvilPlusInventory inventory;
+
+    public PlayerAnvilEchoItemEvent(Player player, BaseCraftItem craftItem,AnvilPlusInventory inventory){
         this.craftItem = craftItem;
-        this.block = block;
+        this.player = player;
+        this.inventory = inventory;
     }
 
-    public Block getBlock() {
-        return block;
+    public AnvilPlusInventory getInventory() {
+        return inventory;
     }
-
 
     public BaseCraftItem getCraftItem() {
         return craftItem;
     }
-
 }

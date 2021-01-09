@@ -63,11 +63,12 @@ public class AnvilPlus extends PluginBase implements Listener {
         Block block = event.getBlock();
         if(block instanceof BlockAnvil){
             if(block.getDamage() < 12) {
-                block.setDamage(block.getDamage() + 1);
-                event.getBlock().level.setBlock(block,block,true,true);
+                BlockAnvil anvil = new BlockAnvil();
+                anvil.setDamage(block.getDamage() + 2);
+                event.getBlock().level.setBlock(block,anvil,true);
             }else{
                 removeInventory(event.getBlock());
-                event.getBlock().level.setBlock(block,Block.get(0),true,true);
+                event.getBlock().level.setBlock(block,Block.get(0));
             }
         }
     }
