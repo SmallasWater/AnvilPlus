@@ -16,9 +16,19 @@ public class CraftItem extends BaseCraftItem{
 
     @Override
     public CraftItem clone() {
-        Item local = this.local.clone();
-        Item second = this.second.clone();
-        Item echo = this.echo.clone();
-        return new CraftItem(local,second,echo);
+        try {
+            CraftItem clone = (CraftItem) super.clone();
+            Item local = this.local.clone();
+            Item second = this.second.clone();
+            Item echo = this.echo.clone();
+            clone.setLocal(local);
+            clone.setSecond(second);
+            clone.setEcho(echo);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
 }
