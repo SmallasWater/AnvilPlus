@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerEvent;
+import cn.nukkit.item.Item;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 
 /**
@@ -21,9 +22,20 @@ public class PlayerUseCraftItemEvent extends PlayerEvent implements Cancellable{
 
 
     private BaseCraftItem craftItem;
-    public PlayerUseCraftItemEvent(Player player, BaseCraftItem craftItem){
+    private Item local,second;
+    public PlayerUseCraftItemEvent(Player player, Item local,Item second, BaseCraftItem craftItem){
         this.player = player;
         this.craftItem = craftItem;
+        this.local = local;
+        this.second = second;
+    }
+
+    public Item getSecond() {
+        return second;
+    }
+
+    public Item getLocal() {
+        return local;
     }
 
     public BaseCraftItem getCraftItem() {

@@ -3,9 +3,11 @@ package com.smallaswater.anvilplus.events;
 import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerEvent;
+import cn.nukkit.item.Item;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 
 /**
+ * 可以对输出的物品进行设置
  * @author SmallasWater
  * Create on 2021/1/9 17:38
  * Package com.smallaswater.anvilplus.events
@@ -20,11 +22,23 @@ public class AnvilSetEchoItemEvent extends PlayerEvent {
 
     private BaseCraftItem echo;
 
+    private Item local,second;
+
     private boolean cancel;
 
-    public AnvilSetEchoItemEvent(Player player, BaseCraftItem echo){
+    public AnvilSetEchoItemEvent(Player player, Item local,Item second, BaseCraftItem echo){
         this.player = player;
         this.echo = echo;
+        this.local = local;
+        this.second = second;
+    }
+
+    public Item getLocal() {
+        return local;
+    }
+
+    public Item getSecond() {
+        return second;
     }
 
     public BaseCraftItem getEcho() {

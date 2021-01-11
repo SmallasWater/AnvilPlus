@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerEvent;
+import cn.nukkit.item.Item;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 import com.smallaswater.anvilplus.inventorys.AnvilPlusInventory;
 
@@ -24,10 +25,22 @@ public class PlayerAnvilEchoItemEvent extends PlayerEvent implements Cancellable
 
     private AnvilPlusInventory inventory;
 
-    public PlayerAnvilEchoItemEvent(Player player, BaseCraftItem craftItem,AnvilPlusInventory inventory){
+    private Item local,second;
+
+    public PlayerAnvilEchoItemEvent(Player player, Item local,Item second, BaseCraftItem craftItem, AnvilPlusInventory inventory){
         this.craftItem = craftItem;
         this.player = player;
         this.inventory = inventory;
+        this.local = local;
+        this.second = second;
+    }
+
+    public Item getLocal() {
+        return local;
+    }
+
+    public Item getSecond() {
+        return second;
     }
 
     public AnvilPlusInventory getInventory() {

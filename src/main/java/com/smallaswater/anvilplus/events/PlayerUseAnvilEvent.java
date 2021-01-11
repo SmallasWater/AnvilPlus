@@ -7,6 +7,7 @@ import cn.nukkit.event.player.PlayerEvent;
 import com.smallaswater.anvilplus.craft.BaseCraftItem;
 
 /**
+ * 玩家从铁砧取出物品
  * @author SmallasWater
  * Create on 2021/1/8 11:55
  * Package com.smallaswater.anvilplus.events

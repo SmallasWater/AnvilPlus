@@ -91,28 +91,23 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         AnvilPlus.saveAnvilBlock.remove(player);
     }
 
-
     private void toClose(Player player){
 
         Item local = getItem(TOOL_ITEM_SLOT);
         Item second = getItem(ITEM_SLOT);
-//        Item echo = getItem(ECHO_ITEM);
         if(local != null && local.getId() != 0){
             player.level.dropItem(player,local);
         }
         if(second != null && second.getId() != 0){
             player.level.dropItem(player,second);
         }
-//        if(echo != null && echo.getId() != 0 && !(echo instanceof OccupyItem)){
-//            player.level.dropItem(player,echo);
-//        }
 
     }
 
     private BaseCraftItem getEchoItem(Player player, Item local, Item second){
         BaseCraftItem craftItem = onEchoItem(player, local, second);
         if(craftItem != null){
-            PlayerAnvilEchoItemEvent event = new PlayerAnvilEchoItemEvent(player,craftItem,this);
+            PlayerAnvilEchoItemEvent event = new PlayerAnvilEchoItemEvent(player,local,second,craftItem,this);
             Server.getInstance().getPluginManager().callEvent(event);
             if(event.isCancelled()){
                 return null;
@@ -131,7 +126,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
         if(craft != null){
 
-            PlayerUseCraftItemEvent event = new PlayerUseCraftItemEvent(player,craft);
+            PlayerUseCraftItemEvent event = new PlayerUseCraftItemEvent(player,local,second,craft);
             Server.getInstance().getPluginManager().callEvent(event);
             if(event.isCancelled()){
                 return null;
@@ -172,7 +167,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                             Server.getInstance().getPluginManager().callEvent(event);
                         }
                     } else {
-                        AnvilSetEchoItemEvent event = new AnvilSetEchoItemEvent(player,echoI);
+                        AnvilSetEchoItemEvent event = new AnvilSetEchoItemEvent(player,local,second,echoI);
                         Server.getInstance().getPluginManager().callEvent(event);
                         if(event.isCancelledItem()){
                             CompoundTag tag = echo.getNamedTag();
