@@ -25,12 +25,17 @@ public class AnvilSetEchoItemEvent extends PlayerEvent {
     private Item local,second;
 
     private boolean cancel;
+    private String cause = "Unknown";
 
     public AnvilSetEchoItemEvent(Player player, Item local,Item second, BaseCraftItem echo){
         this.player = player;
         this.echo = echo;
         this.local = local;
         this.second = second;
+    }
+
+    public String getCause() {
+        return cause;
     }
 
     public Item getLocal() {
@@ -49,8 +54,14 @@ public class AnvilSetEchoItemEvent extends PlayerEvent {
         return this.cancel;
     }
 
-    public void setCancelledItem(boolean cancel) {
+    public void setCancelledItem(boolean cancel,String cause) {
         this.cancel = cancel;
+        this.cause = cause;
+    }
+
+    public void setCancelledItem(String cause) {
+        this.cancel = true;
+        this.cause = cause;
     }
     public void setCancelledItem() {
         this.cancel = true;

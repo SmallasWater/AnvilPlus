@@ -176,6 +176,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                             }
                             tag.putString("tag_name","OccupyItem");
                             echo.setCompoundTag(tag);
+                            echo.setCustomName(AnvilPlus.format("&r&c暂不可取 "+event.getCause()));
                         }
                         //防止重复触发onSlotChange
                         this.slots.put(ECHO_ITEM, echo);

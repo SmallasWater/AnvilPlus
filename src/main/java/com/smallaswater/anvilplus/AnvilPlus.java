@@ -17,8 +17,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
+import com.smallaswater.anvilplus.events.AnvilSetEchoItemEvent;
 import com.smallaswater.anvilplus.events.PlayerUseAnvilEvent;
 import com.smallaswater.anvilplus.inventorys.AnvilPlusInventory;
+import com.smallaswater.anvilplus.utils.LoadMoney;
 import com.smallaswater.anvilplus.utils.Tools;
 
 import java.util.LinkedHashMap;
@@ -31,17 +33,71 @@ import java.util.LinkedHashMap;
  */
 public class AnvilPlus extends PluginBase implements Listener {
 
+
+    private static LoadMoney  loadMoney;
+
     public static LinkedHashMap<Player,Block> saveAnvilBlock = new LinkedHashMap<>();
 
     public static LinkedHashMap<Player,AnvilPlusInventory> inventory = new LinkedHashMap<>();
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+        reloadConfig();
+        loadMoney = new LoadMoney();
+        String economy = getConfig().getString("消耗类型","default").toLowerCase();
+        int load = LoadMoney.EXP;
+        if("default".equalsIgnoreCase(economy)){
+            load = -1;
+        }
+        if("money".equalsIgnoreCase(economy)){
+            load = LoadMoney.MONEY;
+        }
+        if("playerpoint".equalsIgnoreCase(economy)){
+            load = LoadMoney.PLAYER_POINT;
+        }
+        if("economyapi".equalsIgnoreCase(economy)){
+            load = LoadMoney.ECONOMY_API;
+        }
+        if(load != -1) {
+            loadMoney.setMoney(load);
+        }
+        if(loadMoney.getMoney() == LoadMoney.ECONOMY_API){
+            this.getLogger().info("铁砧消耗类型已启用:"+ TextFormat.GREEN+" EconomyAPI");
+        }
+        if(loadMoney.getMoney()  == LoadMoney.MONEY){
+            this.getLogger().info("铁砧消耗类型已启用:"+ TextFormat.GREEN+" Money");
+        }
+        if(loadMoney.getMoney()  == LoadMoney.PLAYER_POINT){
+            this.getLogger().info("铁砧消耗类型已启用:"+ TextFormat.GREEN+" PlayerPoint");
+        }
+        if(loadMoney.getMoney()  == LoadMoney.EXP){
+            this.getLogger().info("铁砧消耗类型已启用:"+ TextFormat.GREEN+" 经验值");
+        }
+
         this.getLogger().info(format("&b[铁砧] 插件加载成功"));
         CraftItemManager.init();
         this.getServer().getPluginManager().registerEvents(this,this);
     }
+    @EventHandler
+    public void onPlayerUseAnvilByMoney(PlayerUseAnvilEvent event){
+        Player player = event.getPlayer();
+        if(player.getGamemode() != 1) {
+            double exp = getConfig().getDouble("使用铁砧消耗数值",10.0);
+            loadMoney.reduceMoney(player,exp);
+        }
+    }
 
 
+    @EventHandler
+    public void onSetEchoItem(AnvilSetEchoItemEvent event){
+        Player player = event.getPlayer();
+        if(player.getGamemode() != 1) {
+            double exp = getConfig().getDouble("使用铁砧消耗数值",10.0);
+            if (loadMoney.myMoney(player) < exp) {
+                event.setCancelledItem(loadMoney.getName()+"不足");
+            }
+        }
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInstance(PlayerInteractEvent event){
