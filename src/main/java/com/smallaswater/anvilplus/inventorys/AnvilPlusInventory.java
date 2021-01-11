@@ -128,7 +128,9 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         }
 
         BaseCraftItem craft = CraftItemManager.getCraftItem(local, second);
+
         if(craft != null){
+
             PlayerUseCraftItemEvent event = new PlayerUseCraftItemEvent(player,craft);
             Server.getInstance().getPluginManager().callEvent(event);
             if(event.isCancelled()){

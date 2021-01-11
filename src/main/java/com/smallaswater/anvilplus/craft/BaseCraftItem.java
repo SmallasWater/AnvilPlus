@@ -19,6 +19,8 @@ public abstract class BaseCraftItem implements Cloneable{
         this.echo = echo;
     }
 
+
+
     public void onEcho(Item local,Item second){
         if(local.getCount() - this.local.getCount() > 0){
             this.local.setCount(local.getCount() - this.local.getCount());
@@ -72,4 +74,8 @@ public abstract class BaseCraftItem implements Cloneable{
     }
 
 
+    @Override
+    protected BaseCraftItem clone() throws CloneNotSupportedException {
+        return (BaseCraftItem) super.clone();
+    }
 }

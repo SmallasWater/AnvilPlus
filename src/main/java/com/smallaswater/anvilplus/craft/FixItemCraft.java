@@ -60,10 +60,19 @@ public class FixItemCraft extends BaseCraftItem{
         return false;
     }
 
+    public void setFixCount(int fixCount) {
+        this.fixCount = fixCount;
+    }
+
     @Override
     public FixItemCraft clone() {
-        Item local = this.local.clone();
-        Item second = this.second.clone();
-        return new FixItemCraft(local,second,fixCount);
+        FixItemCraft clone = null;
+        try {
+            clone = (FixItemCraft) super.clone();
+            clone.setFixCount(fixCount);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return clone;
     }
 }
