@@ -1,6 +1,7 @@
 package com.smallaswater.anvilplus;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAnvil;
 import cn.nukkit.event.EventHandler;
@@ -19,6 +20,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
+import com.smallaswater.anvilplus.events.AnvilBreakEvent;
 import com.smallaswater.anvilplus.events.AnvilSetEchoItemEvent;
 import com.smallaswater.anvilplus.events.PlayerUseAnvilEvent;
 import com.smallaswater.anvilplus.inventorys.AnvilPlusInventory;
@@ -127,13 +129,17 @@ public class AnvilPlus extends PluginBase implements Listener {
     public void onPlayerUseAnvil(PlayerUseAnvilEvent event){
         Block block = event.getBlock();
         if(block instanceof BlockAnvil){
-            if(block.getDamage() < 12) {
-                BlockAnvil anvil = new BlockAnvil();
-                anvil.setDamage(block.getDamage() + 2);
-                event.getBlock().level.setBlock(block,anvil,true);
-            }else{
-                removeInventory(event.getBlock());
-                event.getBlock().level.setBlock(block,Block.get(0));
+            AnvilBreakEvent event1 = new AnvilBreakEvent(event.getPlayer(),block);
+            Server.getInstance().getPluginManager().callEvent(event1);
+            if(!event1.isCancelled()) {
+                if (block.getDamage() < 12) {
+                    BlockAnvil anvil = new BlockAnvil();
+                    anvil.setDamage(block.getDamage() + 2);
+                    event.getBlock().level.setBlock(block, anvil, true);
+                } else {
+                    removeInventory(event.getBlock());
+                    event.getBlock().level.setBlock(block, Block.get(0));
+                }
             }
         }
     }
