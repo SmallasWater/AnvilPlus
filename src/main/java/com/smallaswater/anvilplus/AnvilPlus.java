@@ -81,13 +81,9 @@ public class AnvilPlus extends PluginBase implements Listener {
         CraftItemManager.init();
         this.getServer().getPluginManager().registerEvents(this,this);
     }
-    @EventHandler
-    public void onPlayerUseAnvilByMoney(PlayerUseAnvilEvent event){
-        Player player = event.getPlayer();
-        if(player.getGamemode() != 1) {
-            double exp = getConfig().getDouble("使用铁砧消耗数值",10.0);
-            loadMoney.reduceMoney(player,exp);
-        }
+
+    public static LoadMoney getLoadMoney() {
+        return loadMoney;
     }
 
     public static AnvilPlus getInstance() {
@@ -171,6 +167,7 @@ public class AnvilPlus extends PluginBase implements Listener {
     @EventHandler
     public void onItemChange(InventoryTransactionEvent event){
         InventoryTransaction transaction = event.getTransaction();
+        Player player = transaction.getSource();
         for(InventoryAction action:transaction.getActions()){
             Item item =  action.getSourceItem();
             for(Inventory inventory:transaction.getInventories()){

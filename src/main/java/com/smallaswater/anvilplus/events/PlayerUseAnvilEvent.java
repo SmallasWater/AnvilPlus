@@ -22,10 +22,20 @@ public class PlayerUseAnvilEvent extends PlayerEvent {
 
     private BaseCraftItem craftItem;
     private Block block;
-    public PlayerUseAnvilEvent(Player player, BaseCraftItem craftItem, Block block){
+    private double exp;
+    public PlayerUseAnvilEvent(Player player, BaseCraftItem craftItem, Block block,double exp){
         this.player = player;
         this.craftItem = craftItem;
         this.block = block;
+        this.exp = exp;
+    }
+
+    public void setExp(double exp) {
+        this.exp = exp;
+    }
+
+    public double getExp() {
+        return exp;
     }
 
     public Block getBlock() {

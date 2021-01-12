@@ -22,12 +22,10 @@ import com.smallaswater.anvilplus.events.AnvilSetEchoItemEvent;
 import com.smallaswater.anvilplus.events.PlayerAnvilEchoItemEvent;
 import com.smallaswater.anvilplus.events.PlayerUseAnvilEvent;
 import com.smallaswater.anvilplus.events.PlayerUseCraftItemEvent;
+import com.smallaswater.anvilplus.exception.PlayerMoneyErrorException;
 import com.smallaswater.anvilplus.items.OccupyItem;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -144,6 +142,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
     }
 
+    private double exp;
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
@@ -156,32 +155,47 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                 Item echo = echoI.getEcho();
                 if(echo != null && echo.getId() != 0) {
                     //玩家取出物品时消耗
-                    if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
-                        this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
-                        this.setItem(ITEM_SLOT, echoI.getSecond());
-                        if(echoI.getLocal().getCount() == 0 || echoI.getSecond().getCount() == 0) {
-                            this.setItem(ECHO_ITEM, new OccupyItem());
-                        }
-                        player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
-                        if(AnvilPlus.saveAnvilBlock.containsKey(player)) {
-                            PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player));
-                            Server.getInstance().getPluginManager().callEvent(event);
-                        }
-                    } else {
-                        AnvilSetEchoItemEvent event = new AnvilSetEchoItemEvent(player,local,second,echoI);
-                        Server.getInstance().getPluginManager().callEvent(event);
-                        if(event.isCancelledItem()){
-                            CompoundTag tag = echo.getNamedTag();
-                            if(tag == null){
-                                tag = new CompoundTag();
+                    try {
+                        if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
+                            if (AnvilPlus.saveAnvilBlock.containsKey(player)) {
+                                this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
+                                this.setItem(ITEM_SLOT, echoI.getSecond());
+                                if (echoI.getLocal().getCount() == 0 || echoI.getSecond().getCount() == 0) {
+                                    this.setItem(ECHO_ITEM, new OccupyItem());
+                                }
+                                PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player), exp);
+                                Server.getInstance().getPluginManager().callEvent(event);
+                                Player player = event.getPlayer();
+                                if (player.getGamemode() != 1) {
+                                    if (!AnvilPlus.getLoadMoney().reduceMoney(player, event.getExp())) {
+                                        throw new PlayerMoneyErrorException(player, event.getExp(),before);
+                                    }
+                                }
+                                player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
+
                             }
-                            tag.putString("tag_name","OccupyItem");
-                            echo.setCustomName(AnvilPlus.format("&r&c暂不可取 "+event.getCause()));
-                            echo.setCompoundTag(tag);
+
+                        } else {
+                            exp = AnvilPlus.getInstance().getConfig().getDouble("使用铁砧消耗数值", 10.0);
+                            AnvilSetEchoItemEvent event = new AnvilSetEchoItemEvent(player, local, second, echoI, exp);
+                            Server.getInstance().getPluginManager().callEvent(event);
+                            this.exp = event.getExp();
+                            if (event.isCancelledItem()) {
+                                CompoundTag tag = echo.getNamedTag();
+                                if (tag == null) {
+                                    tag = new CompoundTag();
+                                }
+                                tag.putString("tag_name", "OccupyItem");
+                                echo.setCompoundTag(tag);
+                                echo.setCustomName(AnvilPlus.format("&r&c暂不可取 " + event.getCause()));
+
+                            }
+                            //防止重复触发onSlotChange
+                            this.slots.put(ECHO_ITEM, echo);
+                            this.sendSlot(ECHO_ITEM, this.getViewers());
                         }
-                        //防止重复触发onSlotChange
-                        this.slots.put(ECHO_ITEM, echo);
-                        this.sendSlot(ECHO_ITEM, this.getViewers());
+                    }catch (PlayerMoneyErrorException e){
+                        AnvilPlus.getInstance().getLogger().info(AnvilPlus.format("&c玩家 "+e.getPlayer().getName()+" 在使用铁砧时金钱出现异常"));
                     }
                 }
             }

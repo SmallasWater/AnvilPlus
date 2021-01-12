@@ -25,13 +25,24 @@ public class AnvilSetEchoItemEvent extends PlayerEvent {
     private Item local,second;
 
     private boolean cancel;
+
+    private double exp;
     private String cause = "Unknown";
 
-    public AnvilSetEchoItemEvent(Player player, Item local,Item second, BaseCraftItem echo){
+    public AnvilSetEchoItemEvent(Player player, Item local,Item second, BaseCraftItem echo,double exp){
         this.player = player;
         this.echo = echo;
+        this.exp = exp;
         this.local = local;
         this.second = second;
+    }
+
+    public double getExp() {
+        return exp;
+    }
+
+    public void setExp(double exp) {
+        this.exp = exp;
     }
 
     public String getCause() {
