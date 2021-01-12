@@ -1,4 +1,4 @@
-package com.smallaswater.anvilplus.craft;
+package com.smallaswater.anvilplus;
 
 import cn.nukkit.item.Item;
 
@@ -63,7 +63,7 @@ public abstract class BaseCraftItem implements Cloneable{
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof BaseCraftItem){
-            return ((BaseCraftItem) obj).local.equalsExact(local) && ((BaseCraftItem) obj).second.equalsExact(second);
+            return ((BaseCraftItem) obj).local.equals(local,true,true) && ((BaseCraftItem) obj).second.equals(second,true,true);
         }
         return false;
     }
@@ -75,7 +75,7 @@ public abstract class BaseCraftItem implements Cloneable{
 
 
     @Override
-    protected BaseCraftItem clone() throws CloneNotSupportedException {
+    public BaseCraftItem clone() throws CloneNotSupportedException {
         return (BaseCraftItem) super.clone();
     }
 }

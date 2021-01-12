@@ -2,6 +2,9 @@ package com.smallaswater.anvilplus.craft;
 
 
 import cn.nukkit.item.Item;
+import com.smallaswater.anvilplus.BaseCraftItem;
+import com.smallaswater.anvilplus.craft.defaults.CraftItem;
+import com.smallaswater.anvilplus.craft.defaults.FixItemCraft;
 
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;

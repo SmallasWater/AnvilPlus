@@ -8,6 +8,7 @@ import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
+import cn.nukkit.event.player.PlayerEatFoodEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.inventory.Inventory;
@@ -34,6 +35,7 @@ import java.util.LinkedHashMap;
 public class AnvilPlus extends PluginBase implements Listener {
 
 
+    private static AnvilPlus instance;
     private static LoadMoney  loadMoney;
 
     public static LinkedHashMap<Player,Block> saveAnvilBlock = new LinkedHashMap<>();
@@ -41,6 +43,7 @@ public class AnvilPlus extends PluginBase implements Listener {
     public static LinkedHashMap<Player,AnvilPlusInventory> inventory = new LinkedHashMap<>();
     @Override
     public void onEnable() {
+        instance = this;
         saveDefaultConfig();
         reloadConfig();
         loadMoney = new LoadMoney();
@@ -87,6 +90,9 @@ public class AnvilPlus extends PluginBase implements Listener {
         }
     }
 
+    public static AnvilPlus getInstance() {
+        return instance;
+    }
 
     @EventHandler
     public void onSetEchoItem(AnvilSetEchoItemEvent event){
@@ -98,6 +104,8 @@ public class AnvilPlus extends PluginBase implements Listener {
             }
         }
     }
+
+
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInstance(PlayerInteractEvent event){

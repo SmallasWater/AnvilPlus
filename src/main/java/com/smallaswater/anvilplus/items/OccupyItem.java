@@ -1,4 +1,4 @@
-package com.smallaswater.anvilplus.utils;
+package com.smallaswater.anvilplus.items;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;

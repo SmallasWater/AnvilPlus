@@ -1,13 +1,14 @@
-package com.smallaswater.anvilplus.craft;
+package com.smallaswater.anvilplus.craft.defaults;
 
 import cn.nukkit.item.Item;
+import com.smallaswater.anvilplus.BaseCraftItem;
 
 /**
  * @author SmallasWater
  * Create on 2021/1/7 18:28
  * Package com.smallaswater.anvilplus.craft
  */
-public class CraftItem extends BaseCraftItem{
+public class CraftItem extends BaseCraftItem {
 
 
     public CraftItem(Item local, Item second, Item echo) {

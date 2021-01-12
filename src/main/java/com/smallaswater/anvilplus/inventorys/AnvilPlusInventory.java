@@ -15,14 +15,14 @@ import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import com.smallaswater.anvilplus.AnvilPlus;
-import com.smallaswater.anvilplus.craft.BaseCraftItem;
-import com.smallaswater.anvilplus.craft.CraftItem;
+import com.smallaswater.anvilplus.BaseCraftItem;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
+import com.smallaswater.anvilplus.craft.defaults.CraftItem;
 import com.smallaswater.anvilplus.events.AnvilSetEchoItemEvent;
 import com.smallaswater.anvilplus.events.PlayerAnvilEchoItemEvent;
 import com.smallaswater.anvilplus.events.PlayerUseAnvilEvent;
 import com.smallaswater.anvilplus.events.PlayerUseCraftItemEvent;
-import com.smallaswater.anvilplus.utils.OccupyItem;
+import com.smallaswater.anvilplus.items.OccupyItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -159,8 +159,9 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                     if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
                         this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
                         this.setItem(ITEM_SLOT, echoI.getSecond());
-                        this.setItem(ECHO_ITEM, new OccupyItem());
-
+                        if(echoI.getLocal().getCount() == 0 || echoI.getSecond().getCount() == 0) {
+                            this.setItem(ECHO_ITEM, new OccupyItem());
+                        }
                         player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
                         if(AnvilPlus.saveAnvilBlock.containsKey(player)) {
                             PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player));

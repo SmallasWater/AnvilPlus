@@ -1,13 +1,14 @@
-package com.smallaswater.anvilplus.craft;
+package com.smallaswater.anvilplus.craft.defaults;
 
 import cn.nukkit.item.Item;
+import com.smallaswater.anvilplus.BaseCraftItem;
 
 /**
  * @author SmallasWater
  * Create on 2021/1/7 18:49
  * Package com.smallaswater.anvilplus.craft
  */
-public class FixItemCraft extends BaseCraftItem{
+public class FixItemCraft extends BaseCraftItem {
 
     private int fixCount;
 
