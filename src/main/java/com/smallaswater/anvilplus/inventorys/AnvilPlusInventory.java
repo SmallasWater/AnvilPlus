@@ -142,7 +142,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
     }
 
-    private double exp;
+    private static LinkedHashMap<Player,Double> exp = new LinkedHashMap<>();
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
@@ -150,12 +150,12 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
         Item second = this.getItem(ITEM_SLOT);
         Item echos = this.getItem(ECHO_ITEM);
         if(local.getId() != 0 && second.getId() != 0){
-            BaseCraftItem echoI = getEchoItem(player,local,second);
-            if(echoI != null){
-                Item echo = echoI.getEcho();
-                if(echo != null && echo.getId() != 0) {
-                    //玩家取出物品时消耗
-                    try {
+            try {
+                BaseCraftItem echoI = getEchoItem(player, local, second);
+                if (echoI != null) {
+                    Item echo = echoI.getEcho();
+                    if (echo != null && echo.getId() != 0) {
+                        //玩家取出物品时消耗
                         if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
                             if (AnvilPlus.saveAnvilBlock.containsKey(player)) {
                                 this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
@@ -163,23 +163,21 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                                 if (echoI.getLocal().getCount() == 0 || echoI.getSecond().getCount() == 0) {
                                     this.setItem(ECHO_ITEM, new OccupyItem());
                                 }
-                                PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player), exp);
-                                Server.getInstance().getPluginManager().callEvent(event);
-                                Player player = event.getPlayer();
-                                if (player.getGamemode() != 1) {
-                                    if (!AnvilPlus.getLoadMoney().reduceMoney(player, event.getExp())) {
-                                        throw new PlayerMoneyErrorException(player, event.getExp(),before);
-                                    }
+                                if (!AnvilPlus.getLoadMoney().reduceMoney(player, exp.get(player))) {
+                                    throw new PlayerMoneyErrorException(player, exp.get(player), echos);
                                 }
+                                PlayerUseAnvilEvent event = new PlayerUseAnvilEvent(player, echoI, AnvilPlus.saveAnvilBlock.get(player));
+                                Server.getInstance().getPluginManager().callEvent(event);
+
                                 player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_RANDOM_ANVIL_USE);
 
                             }
 
                         } else {
-                            exp = AnvilPlus.getInstance().getConfig().getDouble("使用铁砧消耗数值", 10.0);
-                            AnvilSetEchoItemEvent event = new AnvilSetEchoItemEvent(player, local, second, echoI, exp);
+                            exp.put(player, AnvilPlus.getInstance().getConfig().getDouble("使用铁砧消耗数值", 10.0));
+                            AnvilSetEchoItemEvent event = new AnvilSetEchoItemEvent(player, local, second, echoI, exp.get(player));
                             Server.getInstance().getPluginManager().callEvent(event);
-                            this.exp = event.getExp();
+                            exp.put(player, event.getExp());
                             if (event.isCancelledItem()) {
                                 CompoundTag tag = echo.getNamedTag();
                                 if (tag == null) {
@@ -194,10 +192,12 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                             this.slots.put(ECHO_ITEM, echo);
                             this.sendSlot(ECHO_ITEM, this.getViewers());
                         }
-                    }catch (PlayerMoneyErrorException e){
-                        AnvilPlus.getInstance().getLogger().info(AnvilPlus.format("&c玩家 "+e.getPlayer().getName()+" 在使用铁砧时金钱出现异常"));
+
+
                     }
                 }
+            }catch (PlayerMoneyErrorException e){
+                AnvilPlus.getInstance().getLogger().info(AnvilPlus.format("&c玩家 "+e.getPlayer().getName()+"在使用铁砧的时候金钱异常"));
             }
         }else{
             if(!(echos instanceof OccupyItem)) {

@@ -15,6 +15,7 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.item.Item;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
@@ -105,6 +106,10 @@ public class AnvilPlus extends PluginBase implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInstance(PlayerInteractEvent event){
+        Item item = event.getItem();
+        if(item.hasCompoundTag()){
+            event.getPlayer().sendMessage("存在tag: "+item.getNamedTag().getDouble("AnvilPlusKey"));
+        }
         Block block = event.getBlock();
         if (event.isCancelled()){
             return;
@@ -159,6 +164,7 @@ public class AnvilPlus extends PluginBase implements Listener {
         if(event.isCancelled()){
             return;
         }
+
         removeInventory(event.getBlock());
 
     }
@@ -167,7 +173,6 @@ public class AnvilPlus extends PluginBase implements Listener {
     @EventHandler
     public void onItemChange(InventoryTransactionEvent event){
         InventoryTransaction transaction = event.getTransaction();
-        Player player = transaction.getSource();
         for(InventoryAction action:transaction.getActions()){
             Item item =  action.getSourceItem();
             for(Inventory inventory:transaction.getInventories()){
