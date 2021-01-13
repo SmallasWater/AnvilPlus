@@ -9,8 +9,6 @@ import cn.nukkit.item.Item;
  */
 public abstract class BaseCraftItem implements Cloneable{
 
-
-
     protected Item local,second,echo;
 
     public BaseCraftItem(Item local,Item second,Item echo) {

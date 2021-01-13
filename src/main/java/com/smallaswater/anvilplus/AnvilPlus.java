@@ -9,7 +9,6 @@ import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
-import cn.nukkit.event.player.PlayerEatFoodEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.inventory.Inventory;
@@ -108,10 +107,6 @@ public class AnvilPlus extends PluginBase implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInstance(PlayerInteractEvent event){
-        Item item = event.getItem();
-        if(item.hasCompoundTag()){
-            event.getPlayer().sendMessage("存在tag: "+item.getNamedTag().getDouble("AnvilPlusKey"));
-        }
         Block block = event.getBlock();
         if (event.isCancelled()){
             return;
