@@ -37,9 +37,6 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
     private static final int TOOL_ITEM_SLOT = 0;
 
-    //锻造次数标签
-    public static final String ANVIL_COUNT = "anvilCount";
-
     private static final int ITEM_SLOT = 2;
 
     private static final int ECHO_ITEM = 4;
@@ -190,12 +187,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                                 echo.setCompoundTag(tag);
                                 echo.setCustomName(AnvilPlus.format("&r&c暂不可取 " + event.getCause()));
                             }
-                            if(tag.contains(ANVIL_COUNT)){
-                                tag.putInt(ANVIL_COUNT,tag.getInt(ANVIL_COUNT) + 1);
-                            }else{
-                                tag.putInt(ANVIL_COUNT,1);
-                            }
-                            echo.setCompoundTag(tag);
+
                             //防止重复触发onSlotChange
                             this.slots.put(ECHO_ITEM, echo);
                             this.sendSlot(ECHO_ITEM, this.getViewers());

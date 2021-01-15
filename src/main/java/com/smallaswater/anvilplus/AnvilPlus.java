@@ -121,6 +121,14 @@ public class AnvilPlus extends PluginBase implements Listener {
     }
 
     @EventHandler
+    public void onAnvilBreak(AnvilBreakEvent event){
+        Block block = event.getBlock();
+        if(getConfig().getStringList("铁砧损坏白名单").contains(block.level.getFolderName())){
+            event.setCancelled();
+        }
+    }
+
+    @EventHandler
     public void onPlayerUseAnvil(PlayerUseAnvilEvent event){
         Block block = event.getBlock();
         if(block instanceof BlockAnvil){
