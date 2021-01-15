@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerEvent;
 import cn.nukkit.item.Item;
-import com.smallaswater.anvilplus.BaseCraftItem;
+import com.smallaswater.anvilplus.craft.BaseCraftItem;
 
 /**
  * 可以对输出的物品进行设置

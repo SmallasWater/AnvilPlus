@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerEvent;
-import com.smallaswater.anvilplus.BaseCraftItem;
+import com.smallaswater.anvilplus.craft.BaseCraftItem;
 
 /**
  * 玩家从铁砧取出物品

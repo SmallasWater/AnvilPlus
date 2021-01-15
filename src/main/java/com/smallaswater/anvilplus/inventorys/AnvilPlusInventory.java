@@ -15,7 +15,7 @@ import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import com.smallaswater.anvilplus.AnvilPlus;
-import com.smallaswater.anvilplus.BaseCraftItem;
+import com.smallaswater.anvilplus.craft.BaseCraftItem;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
 import com.smallaswater.anvilplus.craft.defaults.CraftItem;
 import com.smallaswater.anvilplus.events.AnvilSetEchoItemEvent;

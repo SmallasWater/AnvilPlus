@@ -1,7 +1,7 @@
 package com.smallaswater.anvilplus.craft.defaults;
 
 import cn.nukkit.item.Item;
-import com.smallaswater.anvilplus.BaseCraftItem;
+import com.smallaswater.anvilplus.craft.BaseCraftItem;
 
 /**
  * @author SmallasWater

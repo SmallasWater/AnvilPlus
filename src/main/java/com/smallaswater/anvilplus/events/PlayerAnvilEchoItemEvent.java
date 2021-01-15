@@ -5,7 +5,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerEvent;
 import cn.nukkit.item.Item;
-import com.smallaswater.anvilplus.BaseCraftItem;
+import com.smallaswater.anvilplus.craft.BaseCraftItem;
 import com.smallaswater.anvilplus.inventorys.AnvilPlusInventory;
 
 /**

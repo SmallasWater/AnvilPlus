@@ -1,4 +1,4 @@
-package com.smallaswater.anvilplus;
+package com.smallaswater.anvilplus.craft;
 
 import cn.nukkit.item.Item;
 
