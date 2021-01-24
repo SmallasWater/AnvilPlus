@@ -8,6 +8,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBookEnchanted;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -244,45 +245,46 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                         }
                     }
                 }
-                ArrayList<Enchantment> enchantments = new ArrayList<>(Arrays.asList(second.getEnchantments()));
-                Enchantment enchantment = null;
-                for(Enchantment enchantment1: enchantments){
-                    if(enchantment1.getLevel() > 0 && enchantment1.getId() > 0){
-                        enchantment = enchantment1;
-                    }
-                    if(enchantment != null){
-                        Enchantment localEnchantment = re.getLocal().getEnchantment(enchantment.getId());
-                        if (localEnchantment != null) {
-                            int startLevel = localEnchantment.getLevel();
-                            int level = Math.max(localEnchantment.getLevel(), enchantment.getLevel());
-                            if (localEnchantment.getLevel() == enchantment.getLevel()) {
-                                ++level;
-                            } else{
-                                if(localEnchantment.getLevel() > enchantment.getLevel()){
+                if(second instanceof ItemBookEnchanted || second.getId() == result.getId()){
+                    ArrayList<Enchantment> enchantments = new ArrayList<>(Arrays.asList(second.getEnchantments()));
+                    Enchantment enchantment = null;
+                    for(Enchantment enchantment1: enchantments){
+                        if(enchantment1.getLevel() > 0 && enchantment1.getId() > 0){
+                            enchantment = enchantment1;
+                        }
+                        if(enchantment != null){
+                            Enchantment localEnchantment = re.getLocal().getEnchantment(enchantment.getId());
+                            if (localEnchantment != null) {
+                                int startLevel = localEnchantment.getLevel();
+                                int level = Math.max(localEnchantment.getLevel(), enchantment.getLevel());
+                                if (localEnchantment.getLevel() == enchantment.getLevel()) {
+                                    ++level;
+                                } else{
+                                    if(localEnchantment.getLevel() > enchantment.getLevel()){
+                                        if(countEnchant == 0) {
+                                            continue;
+                                        }
+                                    }
+                                }
+                                enchantment.setLevel(level);
+                                if(startLevel == enchantment.getLevel()){
                                     if(countEnchant == 0) {
                                         continue;
                                     }
                                 }
-                            }
-                            enchantment.setLevel(level);
-                            if(startLevel == enchantment.getLevel()){
-                                if(countEnchant == 0) {
-                                    continue;
+                                if(enchantment.canEnchant(result)) {
+                                    result.addEnchantment(enchantment);
+                                    countEnchant++;
                                 }
-                            }
-                            if(enchantment.canEnchant(result)) {
-                                result.addEnchantment(enchantment);
-                                countEnchant++;
-                            }
 
-                        } else {
-                            if(enchantment.canEnchant(result)){
-                                result.addEnchantment(enchantment);
-                                countEnchant++;
+                            } else {
+                                if(enchantment.canEnchant(result)){
+                                    result.addEnchantment(enchantment);
+                                    countEnchant++;
+                                }
                             }
                         }
                     }
-
                 }
                 if(countEnchant > 0 || isFix){
                     re.onEcho(re.getLocal(),re.getSecond());

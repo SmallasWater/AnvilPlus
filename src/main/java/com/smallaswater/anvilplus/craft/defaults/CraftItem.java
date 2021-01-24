@@ -8,7 +8,8 @@ import com.smallaswater.anvilplus.craft.BaseCraftItem;
  * Create on 2021/1/7 18:28
  * Package com.smallaswater.anvilplus.craft
  */
-public class CraftItem extends BaseCraftItem {
+public final class CraftItem extends BaseCraftItem {
+
 
 
     public CraftItem(Item local, Item second, Item echo) {
@@ -32,6 +33,14 @@ public class CraftItem extends BaseCraftItem {
 
         return clone;
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof CraftItem){
+            return ((CraftItem) obj).local.equals(local,true,true) && ((CraftItem) obj).second.equals(second,true,true);
+        }
+        return false;
     }
 
 

@@ -2,8 +2,11 @@ package com.smallaswater.anvilplus.craft;
 
 
 import cn.nukkit.item.Item;
+import com.smallaswater.anvilplus.craft.defaults.AnyLocalCraftItem;
 import com.smallaswater.anvilplus.craft.defaults.CraftItem;
 import com.smallaswater.anvilplus.craft.defaults.FixItemCraft;
+import com.smallaswater.anvilplus.craft.defaults.ResetNameCraftItem;
+import com.smallaswater.anvilplus.items.AnvilNameTagItem;
 
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
@@ -17,13 +20,11 @@ import java.util.LinkedList;
 public class CraftItemManager {
 
     private static LinkedList<BaseCraftItem> craftItems = new LinkedList<>();
-    private static final LinkedList<Class<? extends BaseCraftItem>> CRAFT_ITEMS_CLASS = new LinkedList<>();
+//    private static final LinkedList<Class<? extends BaseCraftItem>> CRAFT_ITEMS_CLASS = new LinkedList<>();
 
     public static void init(){
-        register(CraftItem.class);
-        register(FixItemCraft.class);
-
         //---木制--//
+        addCraftItem(new ResetNameCraftItem(new AnvilNameTagItem()));
         addCraftItem(new FixItemCraft(Item.get(268),Item.get(17),(int) Math.ceil(Item.get(268).getMaxDurability() / 3.0)));
         addCraftItem(new FixItemCraft(Item.get(269),Item.get(17),(int) Math.ceil(Item.get(269).getMaxDurability()/ 2.0)));
         addCraftItem(new FixItemCraft(Item.get(270),Item.get(17),(int) Math.ceil(Item.get(270).getMaxDurability() / 4.0)));
@@ -69,16 +70,9 @@ public class CraftItemManager {
 
 
     public static void addCraftItem(BaseCraftItem craftItem){
-        if(!craftItems.contains(craftItem)){
-            craftItems.add(craftItem);
-        }
+        craftItems.add(craftItem);
     }
 
-
-
-    public static void register(Class<? extends BaseCraftItem> craftItem){
-        CRAFT_ITEMS_CLASS.add(craftItem);
-    }
 
     public static BaseCraftItem getCraftItem(BaseCraftItem craftItem){
         if(craftItem != null) {
@@ -96,22 +90,19 @@ public class CraftItemManager {
     }
 
     public static BaseCraftItem getCraftItem(Item local,Item second) {
-        BaseCraftItem variable = null;
-        for (Class<? extends BaseCraftItem> var : CRAFT_ITEMS_CLASS) {
+        if(local.getId() != 0 && second.getId() != 0){
+            Class var = CraftItem.class;
             for (Constructor<?> constructor : var.getConstructors()) {
                 try {
-                    if(var == FixItemCraft.class){
-                        variable = (BaseCraftItem) constructor.newInstance(local, second,0);
-                    }else{
-                        variable = (BaseCraftItem) constructor.newInstance(local, second,null);
-                    }
-
+                    return getCraftItem((BaseCraftItem) constructor.newInstance(local, second,null));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-        return getCraftItem(variable);
+
+        return null;
+
     }
 //        BaseCraftItem craftItem = new BaseCraftItem(local,second,null) {
 //        }

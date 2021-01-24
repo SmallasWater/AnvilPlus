@@ -9,8 +9,12 @@ import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
+import cn.nukkit.event.player.PlayerFormRespondedEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
+import cn.nukkit.form.element.ElementInput;
+import cn.nukkit.form.response.FormResponseCustom;
+import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
@@ -23,6 +27,7 @@ import com.smallaswater.anvilplus.events.AnvilBreakEvent;
 import com.smallaswater.anvilplus.events.AnvilSetEchoItemEvent;
 import com.smallaswater.anvilplus.events.PlayerUseAnvilEvent;
 import com.smallaswater.anvilplus.inventorys.AnvilPlusInventory;
+import com.smallaswater.anvilplus.items.AnvilNameTagItem;
 import com.smallaswater.anvilplus.utils.LoadMoney;
 import com.smallaswater.anvilplus.utils.Tools;
 
@@ -40,6 +45,7 @@ public class AnvilPlus extends PluginBase implements Listener {
     private static AnvilPlus instance;
     private static LoadMoney  loadMoney;
 
+    private static LinkedHashMap<Player,AnvilNameTagItem> resetItem = new LinkedHashMap<>();
     public static LinkedHashMap<Player,Block> saveAnvilBlock = new LinkedHashMap<>();
 
     public static LinkedHashMap<Player,AnvilPlusInventory> inventory = new LinkedHashMap<>();
@@ -81,6 +87,7 @@ public class AnvilPlus extends PluginBase implements Listener {
 
         this.getLogger().info(format("&b[铁砧] 插件加载成功"));
         CraftItemManager.init();
+        Item.addCreativeItem(new AnvilNameTagItem());
         this.getServer().getPluginManager().registerEvents(this,this);
     }
 
@@ -108,8 +115,23 @@ public class AnvilPlus extends PluginBase implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInstance(PlayerInteractEvent event){
         Block block = event.getBlock();
+        Item item = event.getItem();
         if (event.isCancelled()){
             return;
+        }
+        if(event.getAction() == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK
+                || event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK){
+                if (item.hasCompoundTag() && item.getNamedTag().contains("anvilItem")) {
+                    if(event.getPlayer().isSneaking()) {
+                        resetItem.put(event.getPlayer(), new AnvilNameTagItem());
+                        FormWindowCustom custom = new FormWindowCustom("重命名");
+                        custom.addElement(new ElementInput("请输入新的名称"));
+                        event.getPlayer().showFormWindow(custom, 0x55a401);
+                    }
+                    event.setCancelled();
+                    return;
+                }
+
         }
         if(block instanceof BlockAnvil){
             if(event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
@@ -117,6 +139,25 @@ public class AnvilPlus extends PluginBase implements Listener {
                 saveAnvilBlock.put(event.getPlayer(),block);
                 event.setCancelled();
             }
+        }
+
+
+    }
+
+    @EventHandler
+    public void onWindowListener(PlayerFormRespondedEvent event){
+        if(event.getFormID() == 0x55a401 && event.getWindow() instanceof FormWindowCustom){
+           if(event.getWindow().getResponse() != null) {
+               String name = ((FormResponseCustom) event.getWindow().getResponse()).getInputResponse(0);
+               if (name == null) {
+                   return;
+               }
+               if (resetItem.containsKey(event.getPlayer())) {
+                   AnvilNameTagItem item = resetItem.get(event.getPlayer());
+                   item.setName(name);
+                   event.getPlayer().getInventory().setItemInHand(item);
+               }
+           }
         }
     }
 
@@ -173,7 +214,6 @@ public class AnvilPlus extends PluginBase implements Listener {
         if(event.isCancelled()){
             return;
         }
-
         removeInventory(event.getBlock());
 
     }
