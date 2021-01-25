@@ -134,6 +134,10 @@ public class LoadMoney {
                     if(player1.getExperience() > money){
                         player1.setExperience((int) (player1.getExperience() - money));
                         return true;
+                    }else{
+                        if(player1.getGamemode() == 1){
+                            return true;
+                        }
                     }
 
                 }

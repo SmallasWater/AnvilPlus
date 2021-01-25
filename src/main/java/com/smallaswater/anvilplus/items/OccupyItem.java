@@ -17,8 +17,6 @@ public class OccupyItem extends Item {
         tag.putString("tag_name","OccupyItem");
         this.setCompoundTag(tag);
         this.setCustomName(AnvilPlus.format("&r&c这里无法放置物品哦"));
-//        this.setLore(AnvilPlus.format("&r&e================="),"", AnvilPlus.format("&r&a前面放置你要修复或附魔的工具"), AnvilPlus.format("&r&d后面请放置材料"),"",
-//                AnvilPlus.format("&r&e================="));
     }
 
 
