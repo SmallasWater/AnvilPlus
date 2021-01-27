@@ -1,6 +1,7 @@
 package com.smallaswater.anvilplus.craft;
 
 import cn.nukkit.item.Item;
+import com.smallaswater.anvilplus.AnvilPlus;
 
 /**
  * @author SmallasWater
@@ -11,6 +12,7 @@ public abstract class BaseCraftItem implements Cloneable{
 
     protected Item local,second,echo;
 
+
     public BaseCraftItem(Item local,Item second,Item echo) {
         this.local = local;
         this.second = second;
@@ -19,7 +21,11 @@ public abstract class BaseCraftItem implements Cloneable{
 
 
 
-    public void onEcho(Item local,Item second){
+    public double getUseMoney() {
+        return AnvilPlus.getInstance().getConfig().getDouble("使用铁砧消耗数值",10.0);
+    }
+
+    public void onEcho(Item local, Item second){
         if(local.getCount() - this.local.getCount() > 0){
             this.local.setCount(local.getCount() - this.local.getCount());
         }else{
@@ -60,9 +66,66 @@ public abstract class BaseCraftItem implements Cloneable{
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof BaseCraftItem){
-            return ((BaseCraftItem) obj).local.equals(local,true,true) && ((BaseCraftItem) obj).second.equals(second,true,true);
+        if(obj != null){
+            if(obj instanceof BaseCraftItem){
+                if(((BaseCraftItem) obj).getLocal() != null && local != null){
+                    if(((BaseCraftItem) obj).getLocal().equals(local,true,true)){
+                        if(((BaseCraftItem) obj).getSecond() != null && second != null){
+                            if(((BaseCraftItem) obj).getSecond().equals(second,true,true)){
+                                if(((BaseCraftItem) obj).getEcho() != null && echo != null){
+                                    return ((BaseCraftItem) obj).getEcho().equals(echo, true, true);
+                                }else{
+                                    return ((BaseCraftItem) obj).getEcho() == null && echo == null;
+                                }
+                            }
+                        }else{
+                            if(((BaseCraftItem) obj).getSecond() == null && second == null){
+                                if(((BaseCraftItem) obj).getEcho() != null && echo != null){
+                                    if(((BaseCraftItem) obj).getEcho().equals(echo,true,true)){
+                                        return true;
+                                    }
+                                }else{
+                                    if(((BaseCraftItem) obj).getEcho() == null && echo == null){
+                                        return true;
+                                    }
+                                }
+                                return true;
+                            }
+                        }
+
+                    }
+                }else{
+                    if(((BaseCraftItem) obj).getLocal() == null && local == null){
+                        if(((BaseCraftItem) obj).getSecond() != null && second != null){
+                            if(((BaseCraftItem) obj).getSecond().equals(second,true,true)){
+                                if(((BaseCraftItem) obj).getEcho() != null && echo != null){
+                                    return ((BaseCraftItem) obj).getEcho().equals(echo, true, true);
+                                }else{
+                                    return ((BaseCraftItem) obj).getEcho() == null && echo == null;
+                                }
+                            }
+                        }else{
+                            if(((BaseCraftItem) obj).getSecond() == null && second == null){
+                                if(((BaseCraftItem) obj).getEcho() != null && echo != null){
+                                    if(((BaseCraftItem) obj).getEcho().equals(echo,true,true)){
+                                        return true;
+                                    }
+                                }else{
+                                    if(((BaseCraftItem) obj).getEcho() == null && echo == null){
+                                        return true;
+                                    }
+                                }
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
         }
+//        if(obj instanceof CraftItem){
+//            return ((CraftItem) obj).local.equals(local,true,true) && ((CraftItem) obj).second.equals(second,true,true);
+//        }
         return false;
     }
 

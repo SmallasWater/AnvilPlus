@@ -35,13 +35,7 @@ public final class CraftItem extends BaseCraftItem {
 
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof CraftItem){
-            return ((CraftItem) obj).local.equals(local,true,true) && ((CraftItem) obj).second.equals(second,true,true);
-        }
-        return false;
-    }
+
 
 
 }

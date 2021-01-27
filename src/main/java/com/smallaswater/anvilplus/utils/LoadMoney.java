@@ -22,7 +22,7 @@ public class LoadMoney {
             money = ECONOMY_API;
         }else if(Server.getInstance().getPluginManager().getPlugin("Money") != null){
             money = MONEY;
-        }else if(Server.getInstance().getPluginManager().getPlugin("PlayerPoint") != null){
+        }else if(Server.getInstance().getPluginManager().getPlugin("playerPoints") != null){
             money = PLAYER_POINT;
         }else{
             money = EXP;

@@ -64,7 +64,7 @@ public class AnvilPlus extends PluginBase implements Listener {
         if("money".equalsIgnoreCase(economy)){
             load = LoadMoney.MONEY;
         }
-        if("playerpoint".equalsIgnoreCase(economy)){
+        if("playerPoint".equalsIgnoreCase(economy)){
             load = LoadMoney.PLAYER_POINT;
         }
         if("economyapi".equalsIgnoreCase(economy)){
@@ -90,7 +90,7 @@ public class AnvilPlus extends PluginBase implements Listener {
             }
         }
         if(loadMoney.getMoney()  == LoadMoney.PLAYER_POINT){
-            if(Server.getInstance().getPluginManager().getPlugin("PlayerPoint") != null){
+            if(Server.getInstance().getPluginManager().getPlugin("playerPoints") != null){
                 this.getLogger().info("铁砧消耗类型已启用:"+ TextFormat.GREEN+" PlayerPoint");
             }else{
                 this.getLogger().warning("铁砧消耗类型无法启用:"+ TextFormat.GREEN+" PlayerPoint "+"已经更改为 经验值");
@@ -119,7 +119,7 @@ public class AnvilPlus extends PluginBase implements Listener {
     public void onSetEchoItem(AnvilSetEchoItemEvent event){
         Player player = event.getPlayer();
         if(player.getGamemode() != 1) {
-            double exp = getConfig().getDouble("使用铁砧消耗数值",10.0);
+            double exp = event.getEcho().getUseMoney();
             if (loadMoney.myMoney(player) < exp) {
                 event.setCancelledItem(loadMoney.getName()+"不足");
             }
@@ -128,6 +128,7 @@ public class AnvilPlus extends PluginBase implements Listener {
 
 
 
+    private static final int MENU_ID = 0x55a401;
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInstance(PlayerInteractEvent event){
         Block block = event.getBlock();
@@ -141,7 +142,7 @@ public class AnvilPlus extends PluginBase implements Listener {
                     resetItem.put(event.getPlayer(), item);
                     FormWindowCustom custom = new FormWindowCustom("重命名");
                     custom.addElement(new ElementInput("请输入新的名称"));
-                    event.getPlayer().showFormWindow(custom, 0x55a401);
+                    event.getPlayer().showFormWindow(custom, MENU_ID);
                     event.setCancelled();
                     return;
                 }
@@ -160,7 +161,7 @@ public class AnvilPlus extends PluginBase implements Listener {
 
     @EventHandler
     public void onWindowListener(PlayerFormRespondedEvent event){
-        if(event.getFormID() == 0x55a401 && event.getWindow() instanceof FormWindowCustom){
+        if(event.getFormID() == MENU_ID && event.getWindow() instanceof FormWindowCustom){
            if(event.getWindow().getResponse() != null) {
                String name = ((FormResponseCustom) event.getWindow().getResponse()).getInputResponse(0);
                if (name == null) {
@@ -183,7 +184,8 @@ public class AnvilPlus extends PluginBase implements Listener {
     @EventHandler
     public void onAnvilBreak(AnvilBreakEvent event){
         Block block = event.getBlock();
-        if(getConfig().getStringList("铁砧损坏白名单").contains(block.level.getFolderName())){
+        if(getConfig().getStringList("铁砧损坏白名单")
+                .contains(block.level.getFolderName())){
             event.setCancelled();
         }
     }
@@ -197,7 +199,7 @@ public class AnvilPlus extends PluginBase implements Listener {
             if(!event1.isCancelled()) {
                 if (block.getDamage() < 12) {
                     BlockAnvil anvil = new BlockAnvil();
-                    anvil.setDamage(block.getDamage() + 2);
+                    anvil.setDamage((block.getDamage() + 1) & 4);
                     event.getBlock().level.setBlock(block, anvil, true);
                 } else {
                     removeInventory(event.getBlock());

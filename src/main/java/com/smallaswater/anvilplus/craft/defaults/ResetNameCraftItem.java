@@ -1,6 +1,7 @@
 package com.smallaswater.anvilplus.craft.defaults;
 
 import cn.nukkit.item.Item;
+import com.smallaswater.anvilplus.craft.BaseCraftItem;
 
 
 /**
@@ -30,9 +31,9 @@ public class ResetNameCraftItem extends AnyLocalCraftItem{
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof CraftItem){
-            boolean b = ((CraftItem) obj).getSecond().equals(second,true,true);
-            if(((CraftItem) obj).getSecond().hasCompoundTag() && ((CraftItem) obj).getSecond().getNamedTag().contains("anvilItem")){
+        if(obj instanceof BaseCraftItem){
+            boolean b = ((BaseCraftItem) obj).getSecond().equals(second,true,true);
+            if(((BaseCraftItem) obj).getSecond().hasCompoundTag() && ((BaseCraftItem) obj).getSecond().getNamedTag().contains("anvilItem")){
                 return true;
             }
             return b;

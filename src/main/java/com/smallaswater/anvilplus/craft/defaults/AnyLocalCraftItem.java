@@ -30,8 +30,8 @@ public class AnyLocalCraftItem extends BaseCraftItem {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof CraftItem){
-            return ((CraftItem) obj).getSecond().equals(second,true);
+        if(obj instanceof BaseCraftItem){
+            return ((BaseCraftItem) obj).getSecond().equals(second,true);
         }
         return false;
     }

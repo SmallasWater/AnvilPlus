@@ -175,7 +175,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                             }
 
                         } else {
-                            exp.put(player, AnvilPlus.getInstance().getConfig().getDouble("使用铁砧消耗数值", 10.0));
+                            exp.put(player, echoI.getUseMoney());
                             AnvilSetEchoItemEvent event = new AnvilSetEchoItemEvent(player, local, second, echoI, exp.get(player));
                             Server.getInstance().getPluginManager().callEvent(event);
                             exp.put(player, event.getExp());

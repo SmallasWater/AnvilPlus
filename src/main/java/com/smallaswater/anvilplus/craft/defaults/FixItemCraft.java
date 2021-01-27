@@ -55,8 +55,8 @@ public class FixItemCraft extends BaseCraftItem {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof CraftItem){
-            return ((CraftItem) obj).getLocal().getId() == getLocal().getId() && ((CraftItem) obj).getSecond().getId() == getSecond().getId();
+        if(obj instanceof BaseCraftItem){
+            return ((BaseCraftItem) obj).getLocal().getId() == getLocal().getId() && ((CraftItem) obj).getSecond().getId() == getSecond().getId();
         }
         return false;
     }
