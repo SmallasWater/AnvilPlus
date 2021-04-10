@@ -6,11 +6,13 @@ package com.smallaswater.anvilplus.inventorys;
 import cn.nukkit.Player;
 
 import cn.nukkit.Server;
+import cn.nukkit.block.Block;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBookEnchanted;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -94,11 +96,12 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
 
         Item local = getItem(TOOL_ITEM_SLOT);
         Item second = getItem(ITEM_SLOT);
+        Position block = AnvilPlus.saveAnvilBlock.get(player).add(0,0.5);
         if(local != null && local.getId() != 0){
-            player.level.dropItem(player,local);
+            player.level.dropItem(block,local);
         }
         if(second != null && second.getId() != 0){
-            player.level.dropItem(player,second);
+            player.level.dropItem(block,second);
         }
 
     }
@@ -249,7 +252,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                     ArrayList<Enchantment> enchantments = new ArrayList<>(Arrays.asList(second.getEnchantments()));
                     Enchantment enchantment = null;
                     for(Enchantment enchantment1: enchantments){
-                        if(enchantment1.getLevel() > 0 && enchantment1.getId() > 0){
+                        if(enchantment1.getLevel() > 0 && enchantment1.getId() >= 0){
                             enchantment = enchantment1;
                         }
                         if(enchantment != null){
